@@ -1,6 +1,8 @@
-package com.maxNiebergall;
+	package com.maxNiebergall;
 
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -22,8 +24,6 @@ public class Graph extends JComponent{
     // create a JavaScript engine
     ScriptEngine engine = factory.getEngineByName("JavaScript");    
     
-    Graphics g = new Graphics();//FIXME
-    
 	Graph(String other){
 		stringFunction=other;
 		
@@ -43,6 +43,10 @@ public class Graph extends JComponent{
 	    }catch(ScriptException e){
 			e.printStackTrace();
 		}
+	}
+	
+	public Dimension getPreferedSize(){
+		return new Dimension(200,200);
 	}
 
 	
