@@ -3,6 +3,7 @@
 import java.awt.Dimension;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -14,9 +15,9 @@ public class Graph extends JComponent{
 	 * 
 	 */
 	private static final long serialVersionUID = -2776772502240664345L;
-	BufferedImage bi = new BufferedImage(areguments_here);
+	//BufferedImage bi = new BufferedImage(areguments_here);
 
-	String stringFunction="";
+	FunctionObject stringFunction;
 	int x1=0;
 	int y1=0;
 
@@ -26,7 +27,7 @@ public class Graph extends JComponent{
     // create a JavaScript engine
     ScriptEngine engine = factory.getEngineByName("JavaScript");    
     
-	Graph(String other){
+	Graph(FunctionObject other){
 		stringFunction=other;
 		
 	    // evaluate JavaScript code from String
@@ -37,7 +38,7 @@ public class Graph extends JComponent{
 	    	
 	    	for(int i=0; i<scopeX; i++){
 		    	engine.put("x", 5);
-	    		engine.eval(stringFunction);
+	    		engine.eval(stringFunction.getStringFunction());
 	    		engine.get("y");
 	    	}
 	    	//TODO draw the graph to the component
