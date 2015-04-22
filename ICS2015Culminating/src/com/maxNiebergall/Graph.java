@@ -1,16 +1,15 @@
-package com.maxNiebergall;
+	package com.maxNiebergall;
 
-import java.awt.Canvas;
 import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.image.BufferedImage;
+
+import java.awt.Graphics2D;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.swing.JComponent;
 
-public class Graph extends Canvas{
+public class Graph extends JComponent{
 	/**
 	 * 
 	 */
@@ -51,6 +50,7 @@ public class Graph extends Canvas{
 	public Dimension getPreferedSize(){
 		return new Dimension(200,200);
 	}
+	
 	
 	
 
