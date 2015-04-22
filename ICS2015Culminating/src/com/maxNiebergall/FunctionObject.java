@@ -13,8 +13,11 @@ public class FunctionObject{
 	@SuppressWarnings("unchecked")
 	FunctionObject(String nameOfFunction, variablesObject[] other, String stringFunction){
 		this.nameOfFunction=nameOfFunction;
-		//variables.addAll(variablesObject) other);
 		this.stringFunction=stringFunction;
+		
+		for(int i=0; i<other.length; i++){
+			variables.add(other[i]);
+		}
 	}
 
 
