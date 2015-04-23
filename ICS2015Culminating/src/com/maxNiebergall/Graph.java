@@ -96,7 +96,7 @@ public class Graph extends JPanel {
 		this.fo = fo;
 	}
 
-	public int getScopeX() {
+	public int getScope() {
 		return scopeX;
 	}
 

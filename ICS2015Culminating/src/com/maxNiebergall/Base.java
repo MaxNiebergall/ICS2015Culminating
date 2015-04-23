@@ -1,13 +1,16 @@
 package com.maxNiebergall;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.List;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
 public class Base{
 	
@@ -20,17 +23,38 @@ public class Base{
 	}
 	
 	Base(){
+		Graph graph = new Graph(new FunctionObject("sin(x)", new variablesObject[]{new variablesObject("amplitude", 20, 'a'), new variablesObject("phase shift", 0, 'p'), new variablesObject("frequency", 2, 'f')}, "y=x+a", "DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE;DEFAULT SUMMARY TEXT HERE"));
 		JFrame frame = new JFrame();
 		JPanel pane = new JPanel();
-		frame.setSize(400, 600);
+		JTextArea summary = new JTextArea(graph.getFo().getSummary());
+		JSlider sliders[] = new JSlider[graph.getFo().getVariables().size()];
+		JPanel sliderPane = new JPanel(new BorderLayout());
+		JLabel label[] = new JLabel[graph.getFo().getVariables().size()];
+		for(int i=0; i<sliders.length; i++){
+			sliders[i]= new JSlider(SwingConstants.VERTICAL, 0, graph.getScope(), graph.getFo().getVariables().get(i).getValueOfVariable());
+		}
+		for(int i=0; i<label.length; i++){
+			label[i]= new JLabel(graph.getFo().getVariables().get(i).getNameOfVariable());
+			label[i].setOpaque(true);
+		}
+		sliderPane.setOpaque(true);
+		sliderPane.setBackground(Color.cyan);
+		for(int i=0; i<label.length; i++){
+			sliderPane.add(label[i], BorderLayout.NORTH);
+		}
+		for(int i=0; i<sliders.length; i++){
+			sliderPane.add(sliders[i], BorderLayout.SOUTH);
+		}
+			
+		
+		frame.setSize(800, 600);
 		frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         
-        Graph graph = new Graph(new FunctionObject("sin(x)", new variablesObject[]{new variablesObject("amplitude", 20, 'a'), new variablesObject("phase shift", 0, 'p'), new variablesObject("frequency", 2, 'f')}, "y=a*Math.sin(x-p)"));
-        graph.setScope(100);
-        
-        graph.setBackground(Color.WHITE);
+        graph.setScope(200);
+        graph.setBackground(Color.GREEN);
         graph.setVisible(true);
+        graph.setSize(200,200);
         
 		// frame window closer
 		frame.addWindowListener(new WindowAdapter() {
@@ -39,11 +63,9 @@ public class Base{
 			}
 		});
 		
-		//pane.add(graph);
 		frame.add(graph);
-		frame.pack();
-        frame.add(pane);
-		frame.validate();
+        frame.add(sliderPane);
+        frame.validate();
 		frame.repaint();
         
 	}

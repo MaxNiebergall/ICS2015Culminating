@@ -8,12 +8,14 @@ public class FunctionObject{
 	private String nameOfFunction="";
 	private String stringFunction="";
 	private LinkedList<variablesObject> variables = new LinkedList<variablesObject>();
+	private String summary="";
 	
 	
 	@SuppressWarnings("unchecked")
-	FunctionObject(String nameOfFunction, variablesObject[] other, String stringFunction){
+	FunctionObject(String nameOfFunction, variablesObject[] other, String stringFunction, String summary){
 		this.nameOfFunction=nameOfFunction;
 		this.stringFunction=stringFunction;
+		this.summary=summary;
 		
 		for(int i=0; i<other.length; i++){
 			variables.add(other[i]);
@@ -48,6 +50,16 @@ public class FunctionObject{
 
 	public void setStringFunction(String stringFunction){
 		this.stringFunction = stringFunction;
+	}
+
+
+	public String getSummary(){
+		return summary;
+	}
+
+
+	public void setSummary(String summary){
+		this.summary = summary;
 	}
 	
 	
