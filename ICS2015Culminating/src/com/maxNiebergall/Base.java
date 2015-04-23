@@ -26,8 +26,9 @@ public class Base{
 		frame.setVisible(true);
         frame.setLocationRelativeTo(null);
         
-        Graph graph = new Graph(new FunctionObject("sin(x)", new variablesObject[]{new variablesObject("amplitude", 0, 'a'), new variablesObject("phase shift", 0, 'p'), new variablesObject("frequency", 2, 'f')}, "y=a*Sin(x-p)"));
-        //graph.setSize(graph.getPreferedSize());
+        Graph graph = new Graph(new FunctionObject("sin(x)", new variablesObject[]{new variablesObject("amplitude", 20, 'a'), new variablesObject("phase shift", 0, 'p'), new variablesObject("frequency", 2, 'f')}, "y=a*Math.sin(x-p)"));
+        graph.setScope(100);
+        
         graph.setBackground(Color.WHITE);
         graph.setVisible(true);
         

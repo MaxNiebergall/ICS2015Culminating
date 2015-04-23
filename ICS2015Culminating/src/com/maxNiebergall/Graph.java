@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.util.LinkedList;
-
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -19,7 +17,7 @@ public class Graph extends JPanel {
 	private static final long serialVersionUID = -2776772502240664345L;
 
 	private FunctionObject fo;
-	private int scopeX = 500, scopeY = 500;
+	private int scopeX = 500, scopeY = scopeX;
 
 	// create a script engine manager
 	ScriptEngineManager factory = new ScriptEngineManager();
@@ -29,8 +27,8 @@ public class Graph extends JPanel {
 	Graph(FunctionObject other) {
 		setBorder(BorderFactory.createLineBorder(Color.black));
 
-		// fo=other;
-		fo = new FunctionObject("y=x+c", new variablesObject[] { new variablesObject("verticle trasnform", 10, 'c') }, "y=(x*x)+x-c");
+		fo=other;
+		//fo = new FunctionObject("y=x+c", new variablesObject[] { new variablesObject("verticle trasnform", 100, 'c') }, "y=100*Math.sin(x-20)+c");
 
 		engine.put("y", 0);
 
@@ -84,10 +82,39 @@ public class Graph extends JPanel {
 			g.setColor(Color.red);
 			Point temp = cartesianConvert(x, ((Double) engine.get("y")).intValue(), getWidth(), getHeight());
 			
-			xPoints[Math.abs(x)] = (int) temp.getX();
-			yPoints[Math.abs(x)] = (int) temp.getY();
+			xPoints[x + scopeX / 2] = (int) temp.getX();
+			yPoints[x + scopeX / 2] = (int) temp.getY();
 		}
 		g.drawPolyline(xPoints, yPoints, scopeX);
+	}
+
+	public FunctionObject getFo() {
+		return fo;
+	}
+
+	public void setFo(FunctionObject fo) {
+		this.fo = fo;
+	}
+
+	public int getScopeX() {
+		return scopeX;
+	}
+
+	public void setScope(int scopeX) {
+		this.scopeX = scopeX;
+		this.scopeY=scopeX;
+	}
+
+	public ScriptEngineManager getFactory() {
+		return factory;
+	}
+
+	public void setFactory(ScriptEngineManager factory) {
+		this.factory = factory;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 }
