@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.geom.Point2D;
+
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -17,7 +19,7 @@ public class Graph extends JPanel {
 	private static final long serialVersionUID = -2776772502240664345L;
 
 	private FunctionObject fo;
-	private int scopeX = 500, scopeY = scopeX;
+	private int scopeX = 200, scopeY = scopeX;
 
 	// create a script engine manager
 	ScriptEngineManager factory = new ScriptEngineManager();
@@ -46,8 +48,8 @@ public class Graph extends JPanel {
 		}
 	}
 
-	public Point cartesianConvert(int x, int y, int width, int height) {
-		return new Point((width / 2) + x, (height / 2) - y);
+	public Point2D.Double cartesianConvert(double x, double y, int width, int height) {
+		return new Point2D.Double((width / 2) + x, (height / 2) - y);
 	}
 
 	public void paintComponent(Graphics g) {
@@ -60,15 +62,18 @@ public class Graph extends JPanel {
 		// Draw the Cartesian Grid
 		g.drawLine(0, getHeight() / 2, getWidth(), getHeight() / 2);
 		g.drawLine(getWidth() / 2, 0, getWidth() / 2, getHeight());
-		for (int i = -(getHeight()); i < getHeight(); i += 10) {
-			Point temp = cartesianConvert(0, i, getWidth(), getHeight());
+		for (int i = -(getHeight()/2); i < getHeight()/2; i += 10) {
+			Point2D.Double temp = cartesianConvert(0, i, getWidth(), getHeight());
 			g.drawString("" + i, (int) temp.getX(), (int) temp.getY());
 		}
-		for (int i = -(getWidth()); i < getWidth(); i += 25) {
-			Point temp = cartesianConvert(i, 0, getWidth(), getHeight());
+		for (int i = -(getWidth()/2); i < getWidth()/2; i += 25) {
+			Point2D.Double temp = cartesianConvert(i, 0, getWidth(), getHeight());
 			g.drawString("" + i, (int) temp.getX(), (int) temp.getY());
 		}
-		int xPoints[] = new int[scopeX], yPoints[] = new int[scopeX];
+		//--------------------------------------------------------------------------
+		
+		//Draw the equation
+		double xPoints[] = new double[scopeX], yPoints[] = new double[scopeX];
 
 		for (int x = (-(scopeX / 2)) + 1; x < (scopeX / 2); x++) {
 			engine.put("x", x);
@@ -80,12 +85,13 @@ public class Graph extends JPanel {
 			}
 			System.out.println(engine.get("y"));
 			g.setColor(Color.red);
-			Point temp = cartesianConvert(x, ((Double) engine.get("y")).intValue(), getWidth(), getHeight());
+			Point2D.Double temp = cartesianConvert(x, ((Double) engine.get("y")).doubleValue(), getWidth(), getHeight());
 			
-			xPoints[x + scopeX / 2] = (int) temp.getX();
-			yPoints[x + scopeX / 2] = (int) temp.getY();
+			xPoints[x + scopeX / 2] = temp.getX();
+			yPoints[x + scopeX / 2] = temp.getY();
 		}
-		g.drawPolyline(xPoints, yPoints, scopeX);
+		g.drawPolyline(xPoints, yPoints, scopeX);//FIXME use drawing that works with doubles
+		//--------------------------------------------------------------------------
 	}
 
 	public FunctionObject getFo() {

@@ -2,17 +2,24 @@ package com.maxNiebergall;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import com.maxNiebergall.variablesObject;
+import com.maxNiebergall.VariablesObject;
 
 public class FunctionObject{
 	private String nameOfFunction="";
 	private String stringFunction="";
-	private LinkedList<variablesObject> variables = new LinkedList<variablesObject>();
+	private LinkedList<VariablesObject> variables = new LinkedList<VariablesObject>();
 	private String summary="";
 	
 	
 	@SuppressWarnings("unchecked")
-	FunctionObject(String nameOfFunction, variablesObject[] other, String stringFunction, String summary){
+	/**
+	 * 
+	 * @param nameOfFunction
+	 * @param other
+	 * @param stringFunction
+	 * @param summary
+	 */
+	FunctionObject(String nameOfFunction, VariablesObject[] other, String stringFunction, String summary){
 		this.nameOfFunction=nameOfFunction;
 		this.stringFunction=stringFunction;
 		this.summary=summary;
@@ -33,12 +40,12 @@ public class FunctionObject{
 	}
 
 
-	public LinkedList<variablesObject> getVariables(){
+	public LinkedList<VariablesObject> getVariables(){
 		return variables;
 	}
 
 
-	public void setVariables(LinkedList<variablesObject> variables){
+	public void setVariables(LinkedList<VariablesObject> variables){
 		this.variables = variables;
 	}
 
