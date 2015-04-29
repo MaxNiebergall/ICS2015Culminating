@@ -3,7 +3,9 @@ package com.maxNiebergall;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 
 import javax.script.ScriptEngine;
@@ -74,13 +76,13 @@ public class Graph extends JPanel {
 		
 		//Draw the equation
 		double xPoints[] = new double[scopeX], yPoints[] = new double[scopeX];
+		
 
 		for (int x = (-(scopeX / 2)) + 1; x < (scopeX / 2); x++) {
 			engine.put("x", x);
 			try {
 				engine.eval(fo.getStringFunction());
 			} catch (ScriptException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			System.out.println(engine.get("y"));
@@ -90,7 +92,14 @@ public class Graph extends JPanel {
 			xPoints[x + scopeX / 2] = temp.getX();
 			yPoints[x + scopeX / 2] = temp.getY();
 		}
-		g.drawPolyline(xPoints, yPoints, scopeX);//FIXME use drawing that works with doubles
+		
+		Path2D p = new Path2D.Double();
+		p.moveTo(xPoints[0], yPoints[0]);
+		for(int x=1; x<xPoints.length; x++){
+	        p.lineTo(xPoints[x], yPoints[x]);
+		}
+		
+		((Graphics2D) g).draw(p);
 		//--------------------------------------------------------------------------
 	}
 

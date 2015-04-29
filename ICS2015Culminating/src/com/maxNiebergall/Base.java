@@ -46,7 +46,7 @@ public class Base implements ActionListener, ChangeListener{
 		JPanel slidersPane = new JPanel();
 		sliders = new JSlider[vo.length];
 		for(int i = 0; i < vo.length; i++){
-			sliders[i] = new JSlider(SwingConstants.VERTICAL, vo[i].getMin(), vo[i].getMax(), vo[i].getValueOfVariable());
+			sliders[i] = new JSlider(SwingConstants.VERTICAL, (int) vo[i].getMin(), (int) vo[i].getMax(), (int) vo[i].getValueOfVariable());
 			sliders[i].addChangeListener(this);
 		}
 		JLabel sliderLabels[] = new JLabel[vo.length];
@@ -87,7 +87,7 @@ public class Base implements ActionListener, ChangeListener{
 	public void stateChanged(ChangeEvent e){
 		for(int i = 0; i < vo.length; i++){
 			if(e.getSource()==sliders[i]){
-				vo[i].setValueOfVariable(sliders[i].getValue());
+				vo[i].setValueOfVariable(sliders[i].getValue()/10);
 			}
 		}
 		frame.validate();
