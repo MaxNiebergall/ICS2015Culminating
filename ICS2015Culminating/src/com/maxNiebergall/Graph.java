@@ -78,7 +78,7 @@ public class Graph extends JPanel {
 		double xPoints[] = new double[scopeX], yPoints[] = new double[scopeX];
 		
 
-		for (int x = (-(scopeX / 2)) + 1; x < (scopeX / 2); x++) {
+		for (int x = (-(scopeX / 2)); x < (scopeX / 2); x++) {
 			engine.put("x", x);
 			try {
 				engine.eval(fo.getStringFunction());
@@ -95,6 +95,9 @@ public class Graph extends JPanel {
 		
 		Path2D p = new Path2D.Double();
 		p.moveTo(xPoints[0], yPoints[0]);
+		System.out.println("points");//=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		System.out.println(xPoints[0]);
+		System.out.println(yPoints[0]);
 		for(int x=1; x<xPoints.length; x++){
 	        p.lineTo(xPoints[x], yPoints[x]);
 		}

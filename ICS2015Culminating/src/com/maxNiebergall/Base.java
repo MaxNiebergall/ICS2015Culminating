@@ -1,23 +1,20 @@
 package com.maxNiebergall;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.text.DecimalFormat;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JTextArea;
-import javax.swing.SwingConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.JTextField;
 
-public class Base implements ActionListener, ChangeListener{
+public class Base implements ActionListener, MouseWheelListener{
 	
 	/**
 	 * @param args
@@ -26,79 +23,94 @@ public class Base implements ActionListener, ChangeListener{
 		new Base();
 		
 	}
+	
 	VariablesObject vo[];
-	JSlider sliders[];
+	JTextField variableInputs[];
 	JFrame frame;
 	
 	Base(){
-		int graphScope=200;
+		int graphScope = 200;
 		vo = new VariablesObject[2];
-		vo[0] = new VariablesObject("Multiplyer", 1, 'm', -graphScope, graphScope);
-		vo[1] = new VariablesObject("Y intercept", 0, 'b', -graphScope, graphScope);
-		FunctionObject fo = new FunctionObject("Linear Function", vo, "y=m*x+b", "");
+		vo[0] = new VariablesObject("Slope", 1.00, 'm', -graphScope / 10, graphScope / 10);
+		vo[1] = new VariablesObject("Y intercept", 0.00, 'b', -graphScope, graphScope);
+		FunctionObject fo = new FunctionObject("Linear Function", vo, "y=m*x+b", "The Linear function is a straight line that can be manipulated by Slope and Y-Intercept");
 		Graph graph = new Graph(fo);
 		graph.setScope(graphScope);
 		graph.setSize(graphScope, graphScope);
 		
 		frame = new JFrame();
-		JPanel bottomPane = new JPanel(new GridLayout(1,2));
+		JPanel bottomPane = new JPanel(new FlowLayout());
 		JPanel pane = new JPanel(new BorderLayout());
-		JPanel slidersPane = new JPanel();
-		sliders = new JSlider[vo.length];
+		JPanel summaryPane = new JPanel();
+		JPanel inputsPane = new JPanel();
+		variableInputs = new JTextField[vo.length];
 		for(int i = 0; i < vo.length; i++){
-			sliders[i] = new JSlider(SwingConstants.VERTICAL, (int) vo[i].getMin(), (int) vo[i].getMax(), (int) vo[i].getValueOfVariable());
-			sliders[i].addChangeListener(this);
+			variableInputs[i] = new JTextField("" + vo[i].getValueOfVariable());
+			variableInputs[i].addActionListener(this);
 		}
-		JLabel sliderLabels[] = new JLabel[vo.length];
+		JLabel inputsLabels[] = new JLabel[vo.length];
 		for(int i = 0; i < vo.length; i++){
-			sliderLabels[i] = new JLabel(vo[i].getNameOfVariable());
+			inputsLabels[i] = new JLabel(vo[i].getNameOfVariable());
+		}
+		JPanel inputsPanels[] = new JPanel[vo.length];
+		for(int i = 0; i < vo.length; i++){
+			inputsPanels[i] = new JPanel();
+			inputsPanels[i].add(variableInputs[i]);
+			inputsPanels[i].add(inputsLabels[i]);
 		}
 		
 		for(int i = 0; i < vo.length; i++){
-			slidersPane.add(sliders[i]);
-			slidersPane.add(sliderLabels[i]);
+			inputsPane.add(inputsPanels[i]);
 		}
+		summaryPane.add(new JTextArea(fo.getSummary()));
+		//TODO make the summary wrap properly. Fix the formmating
 		
 		bottomPane.add(graph);
-		bottomPane.add(slidersPane);
+		bottomPane.add(inputsPane);
 		pane.add(bottomPane, BorderLayout.SOUTH);
+		pane.add(summaryPane);
 		frame.add(pane);
 		
-		frame.setSize(400, 600);
+		frame.setSize(450, 600);
+		frame.setResizable(false);
+		frame.addMouseWheelListener(this);
 		frame.setVisible(true);
 		frame.setLocationRelativeTo(null);
-		
-		// frame window closer
-		frame.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
-				System.exit(0);
-			}
-		});
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		frame.validate();
 		frame.repaint();
 		
-		
-		
-		
 	}
-
+	
 	@Override
-	public void stateChanged(ChangeEvent e){
+	public void actionPerformed(ActionEvent aE){
 		for(int i = 0; i < vo.length; i++){
-			if(e.getSource()==sliders[i]){
-				vo[i].setValueOfVariable(sliders[i].getValue()/10);
+			if(aE.getSource() == variableInputs[i]){
+				updateGraph(i);
 			}
 		}
+	}
+	
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e){
+		for(int i = 0; i < vo.length; i++){
+			if(variableInputs[i].hasFocus()){
+				Double d = (Double.parseDouble(variableInputs[i].getText()) + -(e.getWheelRotation()/10.0));
+				System.out.println("varIn "+variableInputs[i].getText());
+				System.out.println("wheelroation "+e.getWheelRotation()/10.0);
+				System.out.println("d "+d);
+				
+				variableInputs[i].setText(""+new DecimalFormat("0.00").format(d));
+				updateGraph(i);
+			}
+		}
+	}
+	
+	private void updateGraph(int i){
+		vo[i].setValueOfVariable(Double.parseDouble(variableInputs[i].getText()));
 		frame.validate();
 		frame.repaint();
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0){
-		// TODO Auto-generated method stub
-		
 	}
 	
 }
