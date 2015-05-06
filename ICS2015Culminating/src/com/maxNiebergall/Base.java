@@ -18,6 +18,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 
 public class Base implements ActionListener, MouseWheelListener{
 	
@@ -35,6 +36,8 @@ public class Base implements ActionListener, MouseWheelListener{
 	JMenuItem menuAbout;
 	JMenuItem menuBack;
 	FunctionObject fo;
+	final String VERSION= "0.1.0";
+	final String NAME_OF_BUSINESS="MFJ Inc.";
 	
 	Base(){
 		int graphScope = 200;
@@ -131,6 +134,7 @@ public class Base implements ActionListener, MouseWheelListener{
 		}
 		else if(aE.getSource().equals(menuAbout)){
 			System.out.println("menuAbout");
+			about();
 		}
 	}
 	
@@ -157,6 +161,20 @@ public class Base implements ActionListener, MouseWheelListener{
 	private void about(){
 		JFrame aboutFrame = new JFrame();
 		//TODO finish implementing the about page
+		aboutFrame.setDefaultCloseOperation(aboutFrame.DISPOSE_ON_CLOSE);
+		aboutFrame.setTitle("About NAME_OF_PROGRAM");
+		String HTML=("<html>"+"Version: "+ VERSION+"</br> Program By:</br>Max Niebergall</br>Faizan Nadeem</br>and Jovan Panduric</br>"+"&copy; 2015"+NAME_OF_BUSINESS+"</hr></br> to edit the function list, click <Button>HERE</Button>"+"</html>");
+		JLabel textPane = new JLabel();
+		textPane.setText(HTML);
+		aboutFrame.add(textPane);
+		aboutFrame.setAlwaysOnTop(true);
+		aboutFrame.setLocation(frame.getLocation());
+		aboutFrame.setSize(frame.getSize());
+		aboutFrame.setResizable(false);
+		aboutFrame.setVisible(true);
+		
+		aboutFrame.validate();
+		aboutFrame.repaint();
 	}
 	
 }
