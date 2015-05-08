@@ -5,13 +5,22 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -19,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 
 public class Base implements ActionListener, MouseWheelListener{
 	
@@ -35,7 +45,9 @@ public class Base implements ActionListener, MouseWheelListener{
 	JFrame frame;
 	JMenuItem menuAbout;
 	JMenuItem menuBack;
+	JMenuItem menuBackFromFunctionList;
 	FunctionObject fo;
+	FunctionObject[] foArray;
 	final String VERSION= "0.1.0";
 	final String NAME_OF_BUSINESS="MFJ Inc.";
 	
@@ -45,7 +57,11 @@ public class Base implements ActionListener, MouseWheelListener{
 		vo[0] = new VariablesObject("Slope", 1.00, 'm', -graphScope / 10, graphScope / 10);
 		vo[1] = new VariablesObject("Y intercept", 0.00, 'b', -graphScope, graphScope);
 		fo = new FunctionObject("Linear Function", vo, "y=m*x+b", "The Linear function is a straight line that can be manipulated by Slope and Y-Intercept");
-		
+		foArray=new FunctionObject[10];
+		for(int i=0; i<10; i++){
+			foArray[i]= new FunctionObject("Linear Function", vo, "y=m*x+b", "The Linear function is a straight line that can be manipulated by Slope and Y-Intercept");
+		}
+	
 		
 		Graph graph = new Graph(fo);
 		graph.setScope(graphScope);
@@ -54,7 +70,10 @@ public class Base implements ActionListener, MouseWheelListener{
 		frame = new JFrame();
 		JMenuBar menuBar = new JMenuBar();
 		menuBack = new JMenuItem("Back");
-		menuAbout = new JMenuItem("About");
+		menuBack.setIcon(new ImageIcon("back.png"));
+		menuAbout = new JMenuItem("                                                           About");
+		menuAbout.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuBack.setHorizontalAlignment(SwingConstants.LEFT);
 		menuBack.addActionListener(this);
 		menuAbout.addActionListener(this);
 		menuBar.add(menuBack);
@@ -131,10 +150,14 @@ public class Base implements ActionListener, MouseWheelListener{
 		// Menu Buttons
 		if(aE.getSource().equals(menuBack)){
 			System.out.println("menuBack");
+			backFromGraphing();
 		}
 		else if(aE.getSource().equals(menuAbout)){
 			System.out.println("menuAbout");
 			about();
+		}
+		else if(aE.getSource().equals(menuBackFromFunctionList)){
+			
 		}
 	}
 	
@@ -158,23 +181,85 @@ public class Base implements ActionListener, MouseWheelListener{
 		frame.validate();
 		frame.repaint();
 	}
-	private void about(){
+	private void about(){//TODO use a custom JDialog instead. This will allow for freezing other frames when About is opened
 		JFrame aboutFrame = new JFrame();
 		//TODO finish implementing the about page
 		aboutFrame.setDefaultCloseOperation(aboutFrame.DISPOSE_ON_CLOSE);
 		aboutFrame.setTitle("About NAME_OF_PROGRAM");
-		String HTML=("<html>"+"Version: "+ VERSION+"</br> Program By:</br>Max Niebergall</br>Faizan Nadeem</br>and Jovan Panduric</br>"+"&copy; 2015"+NAME_OF_BUSINESS+"</hr></br> to edit the function list, click <Button>HERE</Button>"+"</html>");
+		String HTML=("<html>"+"Version: "+ VERSION+"<br> Program By:<br>Max Niebergall<br>Faizan Nadeem<br>and Jovan Panduric<br>"+"&copy; 2015 "+NAME_OF_BUSINESS+"<hr><br> To edit the function list, Click</html>");
+		JPanel aboutPane = new JPanel(new BorderLayout());
 		JLabel textPane = new JLabel();
+		JButton here = new JButton("Here");
+		here.addActionListener(this); //TODO Add functionality
 		textPane.setText(HTML);
-		aboutFrame.add(textPane);
+		aboutPane.add(here, BorderLayout.SOUTH);
+		aboutPane.add(textPane);
+		aboutFrame.add(aboutPane);
 		aboutFrame.setAlwaysOnTop(true);
 		aboutFrame.setLocation(frame.getLocation());
 		aboutFrame.setSize(frame.getSize());
 		aboutFrame.setResizable(false);
 		aboutFrame.setVisible(true);
+		aboutFrame.pack();
 		
 		aboutFrame.validate();
 		aboutFrame.repaint();
+	}
+	private void backFromGraphing(){
+		functionList();
+	}
+	private void functionList(){
+		JFrame flFrame = new JFrame();
+		JPanel flPane = new JPanel();
+		//TODO finish implementing the about page
+		flFrame.setDefaultCloseOperation(flFrame.EXIT_ON_CLOSE);
+		flFrame.setTitle("NAME_OF_PROGRAM -> Function Selection");
+	
+		JMenuBar menuBar = new JMenuBar();
+		menuBackFromFunctionList = new JMenuItem("Back");
+//		try{
+//			menuBackFromFunctionList.setIcon(new ImageIcon(new URL("back.png")));
+//		}catch(MalformedURLException e){
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		menuAbout = new JMenuItem("                                                           About");
+		menuAbout.setHorizontalAlignment(SwingConstants.RIGHT);
+		menuBackFromFunctionList.setHorizontalAlignment(SwingConstants.LEFT);
+		menuBackFromFunctionList.addActionListener(this);
+		menuAbout.addActionListener(this);
+		menuBar.add(menuBackFromFunctionList);
+		menuBar.add(menuAbout);
+		
+		final JList<FunctionObject> list = new JList<FunctionObject>();
+		list.setListData(foArray);
+		JLabel summary = new JLabel();
+		
+		
+		 MouseListener mouseListener = new MouseAdapter() {
+		     public void mouseClicked(MouseEvent e) {
+		    	 //TODO add single click display summary: summary.setText(list.getSelectedValue().getSummary());
+		         if (e.getClickCount() == 2) {
+		             int index = list.locationToIndex(e.getPoint());
+		             System.out.println("Double clicked on Item " + index);
+		          }
+		     }
+		 };
+		 list.addMouseListener(mouseListener);
+		
+		flPane.add(list);
+		flFrame.add(flPane);
+		flFrame.setJMenuBar(menuBar);
+		flFrame.setAlwaysOnTop(true);
+		flFrame.setLocation(frame.getLocation());
+		flFrame.setSize(frame.getSize());
+		flFrame.setResizable(false);
+		flFrame.setVisible(true);
+		flFrame.pack();
+		frame.setVisible(false);
+		
+		flFrame.validate();
+		flFrame.repaint();
 	}
 	
 }

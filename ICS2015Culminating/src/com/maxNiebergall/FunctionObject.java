@@ -68,7 +68,10 @@ public class FunctionObject{
 	public void setSummary(String summary){
 		this.summary = summary;
 	}
-	
+	 
+	public String toString(){
+		return getNameOfFunction();
+	}
 	
 	
 	
