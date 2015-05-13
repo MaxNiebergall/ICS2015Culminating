@@ -3,6 +3,7 @@ package com.maxNiebergall;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -210,7 +211,7 @@ public class Base implements ActionListener, MouseWheelListener{
 	}
 	private void functionList(){
 		JFrame flFrame = new JFrame();
-		JPanel flPane = new JPanel();
+		JPanel flPane = new JPanel(new GridLayout(1,2));
 		//TODO finish implementing the about page
 		flFrame.setDefaultCloseOperation(flFrame.EXIT_ON_CLOSE);
 		flFrame.setTitle("NAME_OF_PROGRAM -> Function Selection");
@@ -233,7 +234,9 @@ public class Base implements ActionListener, MouseWheelListener{
 		
 		final JList<FunctionObject> list = new JList<FunctionObject>();
 		list.setListData(foArray);
-		JLabel summary = new JLabel();
+		final JTextArea summary = new JTextArea();
+		summary.setLineWrap(true);
+		summary.setBackground(Color.GRAY);
 		
 		
 		 MouseListener mouseListener = new MouseAdapter() {
@@ -243,11 +246,16 @@ public class Base implements ActionListener, MouseWheelListener{
 		             int index = list.locationToIndex(e.getPoint());
 		             System.out.println("Double clicked on Item " + index);
 		          }
+		         else if (e.getClickCount() == 1) {
+		             int index = list.locationToIndex(e.getPoint());
+		             summary.setText(list.getSelectedValue().getSummary());
+		             System.out.println("Single clicked on Item " + index);
+		          }
 		     }
 		 };
 		 list.addMouseListener(mouseListener);
-		
 		flPane.add(list);
+		flPane.add(summary);
 		flFrame.add(flPane);
 		flFrame.setJMenuBar(menuBar);
 		flFrame.setAlwaysOnTop(true);
