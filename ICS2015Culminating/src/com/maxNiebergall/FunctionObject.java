@@ -1,8 +1,6 @@
 package com.maxNiebergall;
 
-import java.util.Collection;
 import java.util.LinkedList;
-import com.maxNiebergall.VariablesObject;
 
 public class FunctionObject{
 	private String nameOfFunction="";
@@ -11,7 +9,6 @@ public class FunctionObject{
 	private String summary="";
 	
 	
-	@SuppressWarnings("unchecked")
 	/**
 	 * 
 	 * @param nameOfFunction
