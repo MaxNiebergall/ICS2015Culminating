@@ -11,17 +11,23 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
@@ -51,8 +57,8 @@ public class Base implements ActionListener, MouseWheelListener{
 	private FunctionObject fo;
 	private FunctionObject[] foArray;
 	private final String VERSION = "0.1.0";
-	private final String NAME_OF_BUSINESS = "MFJ Inc.";
-	private int itemSelected=-1;
+	private final String NAME_OF_BUSINESS = "Baller Unlimited";
+	private int itemSelected = -1;
 	
 	Base(){
 		int graphScope = 200;
@@ -87,21 +93,20 @@ public class Base implements ActionListener, MouseWheelListener{
 			System.out.println("menuAbout");
 			about();
 			
-		// Other Buttons
+			// Other Buttons
 		}else if(aE.getSource().equals(here)){
 			System.out.println("here");
 			updateFunctionList();
 		}else if(aE.getSource().equals(addFunction)){
 			System.out.println("addFunction");
-			funtionEdit(new FunctionObject("", null, "", ""));
+			funtionEdit(new FunctionObject("", new VariablesObject[0], "", ""));//TODO Make these actually do stuff
 			
-
 		}else if(aE.getSource().equals(removeFunction)){
 			System.out.println("removeFunction");
-
+			
 		}else if(aE.getSource().equals(editFunction)){
 			System.out.println("editFunction");
-
+			
 		}
 	}
 	
@@ -336,31 +341,90 @@ public class Base implements ActionListener, MouseWheelListener{
 		UFLFrame.repaint();
 		
 	}
-
-	private void funtionEdit(FunctionObject other){ //TODO Finished this popupMenu
-		JPopupMenu popup = new JPopupMenu("Edit Function");
-		JTextField nameOfFunction = new JTextField(other.getNameOfFunction());
-		JTextField stringFunction = new JTextField(other.getStringFunction());
-		JTextField summary = new JTextField(other.getSummary());
-		
-		JList list = new JList();
-		JTextField numberOfVariables = new JTextField("0");
-		numberOfVariables.setToolTipText("Must be an Integer");
-		try{
-			Integer.parseInt(numberOfVariables.getText());
-			numberOfVariables.setBackground(Color.white);
-		}catch(NumberFormatException NFE){
-			numberOfVariables.setBackground(Color.red);
+	
+	String nameOfFunction;
+	String stringFunction;
+	String summary;
+	JList<VariablesObject> list;
+	DefaultListModel<VariablesObject> listModel;
+	
+	private FunctionObject funtionEdit(FunctionObject other){ // TODO Finished this
+																// popupMenu
+		JFrame frame = new JFrame();
+		JPanel pane = new JPanel();
+		nameOfFunction = other.getNameOfFunction();
+		stringFunction = other.getStringFunction();
+		summary = other.getStringFunction();
+		listModel = new DefaultListModel<VariablesObject>();
+		for(int i=0; i<other.getVariables().size(); i++){
+			listModel.addElement(other.getVariables().get(i));
 		}
-		JTextField[] variables = new JTextField[Integer.parseInt(numberOfVariables.getText())];
-		for(int i=0; i<Integer.parseInt(numberOfVariables.getText()); i++){
-			variables[i] = new JTextField();
-		}
+		list = new JList<VariablesObject>(listModel);
 		
+		JButton name = new JButton("Name of Function");
+		JButton string = new JButton("Equation of Function");
+		JButton buttSummary = new JButton("Summary");
+		JButton addVar = new JButton("Add Variable");
+		JButton remVar = new JButton("Remove Variable");
 		
+		JPanel varPane = new JPanel();
+		varPane.add(addVar);
+		varPane.add(remVar);
 		
+		pane.add(list);
+		pane.add(varPane);
+		pane.add(name);
+		pane.add(string);
+		pane.add(buttSummary);
 		
+		name.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				nameOfFunction = JOptionPane.showInputDialog("Please input the name of the function\neg. \"Linear Function\"\nThe current name is: " + nameOfFunction);
+			}// end of actionPerformed
+		});// end of saveFile
+		
+		string.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				stringFunction = JOptionPane.showInputDialog("Please input the equation of the function\neg. \"y=mx+b\"\nThe current eqution is: " + stringFunction + "\nNote: Trigenometric functions such as sin(x) or tan(x) must be written as Math.Sin(x) or Math.Tan(x)").toLowerCase();
+			}// end of actionPerformed
+		});// end of saveFile
+		
+		buttSummary.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				summary = JOptionPane.showInputDialog("Please input the summary for the function\neg. \"Linear Functions are straight lines with a defined slope\"\nThe current summary is: " + summary);
+			}// end of actionPerformed
+		});// end of saveFile
+		
+		addVar.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				String nameOfVariable="";             
+				double valueOfVariable=0;             
+				char charVariable='~';                
+				boolean useRadians=false;             
+				boolean useMin=false, useMax=false;   
+				double min=0, max=0;                  
+				                                      
+				nameOfVariable = JOptionPane.showInputDialog("Please input the name of the Variable\neg. \"Slope\"\n");
+				valueOfVariable = Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the defualt value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only"));
+				charVariable = JOptionPane.showInputDialog("Please input the character representing the variable\neg. \"x\"\nNote: input must be exactly one character, else the fist charcter will be used").charAt(0);
+				//useRadians = JOptionPane.showConfirmDialog(varPane, "Use Radians ")
+				min=Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the minimum value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only)\nNote: if no minimum is nessasary use 0"));
+				max=Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the maximum value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only)\nNote: if no maximum is nessasary use 0"));
+				
+				VariablesObject varO = new VariablesObject(nameOfVariable, valueOfVariable, charVariable, useRadians, min, max);
+				
+				listModel.addElement(varO);
+			}// end of actionPerformed
+		});// end of saveFile
+		
+		remVar.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				listModel.remove(list.getSelectedIndex());
+			}// end of actionPerformed
+		});// end of saveFile
+		
+		return other;
 		
 	}
-
+	
 }
