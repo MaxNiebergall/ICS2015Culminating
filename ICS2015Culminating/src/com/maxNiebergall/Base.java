@@ -11,17 +11,18 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Writer;
 import java.text.DecimalFormat;
 import java.util.LinkedList;
+import java.util.Scanner;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -29,7 +30,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -55,25 +55,74 @@ public class Base implements ActionListener, MouseWheelListener{
 	private JMenuItem menuAbout;
 	private JMenuItem menuBack;
 	private FunctionObject fo;
-	private FunctionObject[] foArray;
+	private LinkedList<FunctionObject> foList;
 	private final String VERSION = "0.1.0";
 	private final String NAME_OF_BUSINESS = "Baller Unlimited";
 	private int itemSelected = -1;
+	private Scanner sc = new Scanner("functions.txt");
+	private BufferedWriter bw;
 	
 	Base(){
-		int graphScope = 200;
-		vo = new VariablesObject[2];
-		vo[0] = new VariablesObject("Slope", 1.00, 'm', -graphScope / 10, graphScope / 10);
-		vo[1] = new VariablesObject("Y intercept", 0.00, 'b', -graphScope, graphScope);
-		fo = new FunctionObject("Linear Function", vo, "y=m*x+b", "The Linear function is a straight line that can be manipulated by Slope and Y-Intercept");
-		foArray = new FunctionObject[10];
-		for(int i = 0; i < 10; i++){
-			foArray[i] = new FunctionObject("Linear Function", vo, "y=m*x+b", "The Linear function is a straight line that can be manipulated by Slope and Y-Intercept");
+		 try{
+			bw= new BufferedWriter(new FileWriter("functions.txt"));
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		 functionsOut(new FunctionObject());//FIXME print out the default functions
+		 
+		 
+		foList = new LinkedList<FunctionObject>();
+		for(int i = Integer.parseInt(sc.nextLine()); i > 0; i--){
+			foList.add(readInFunction());
 		}
 		
 		functionList();
 		
 	}
+	
+	public FunctionObject readInFunction(){
+		String name = sc.nextLine();
+		String equation = sc.nextLine();
+		String summary = sc.nextLine();
+		int numOfVariables = Integer.parseInt(sc.nextLine());
+		VariablesObject[] tempVO = new VariablesObject[numOfVariables];
+		for(int i = 0; i < numOfVariables; i++){
+			tempVO[i] = new VariablesObject(sc.nextLine(), Double.parseDouble(sc.nextLine()), sc.nextLine().charAt(0), true, Double.parseDouble(sc.nextLine()), Double.parseDouble(sc.nextLine()));
+		}
+		sc.close();
+		return new FunctionObject(name, tempVO, equation, summary);
+	}
+	
+	public void functionsOut(FunctionObject other){
+		String name = sc.nextLine();
+		String equation = sc.nextLine();
+		String summary = sc.nextLine();
+		int numOfVariables = Integer.parseInt(sc.nextLine());
+		VariablesObject[] tempVO = new VariablesObject[numOfVariables];
+		for(int i = 0; i < numOfVariables; i++){
+			tempVO[i] = new VariablesObject(sc.nextLine(), Double.parseDouble(sc.nextLine()), sc.nextLine().charAt(0), Double.parseDouble(sc.nextLine()), Double.parseDouble(sc.nextLine()));
+		}
+		try{
+			bw.write(other.getNameOfFunction());
+
+		bw.write(other.getStringFunction());
+		bw.write(other.getSummary());
+		bw.write(other.getVariables().size());
+		for(int i = other.getVariables().size(); i > 0; i--){
+			bw.write(""+other.getVariables().get(i).getNameOfVariable());
+			bw.write(""+other.getVariables().get(i).getValueOfVariable());
+			bw.write(""+other.getVariables().get(i).getCharVariable());
+			bw.write(""+other.getVariables().get(i).getMin());
+			bw.write(""+other.getVariables().get(i).getMax());
+		}
+		}catch(IOException e){
+			e.printStackTrace();
+		}
+		bw.close();
+	}
+	
+	// String nameOfVariable, double valueOfVariable, char charVariable, double min,
+	// double max
 	
 	@Override
 	public void actionPerformed(ActionEvent aE){
@@ -99,13 +148,20 @@ public class Base implements ActionListener, MouseWheelListener{
 			updateFunctionList();
 		}else if(aE.getSource().equals(addFunction)){
 			System.out.println("addFunction");
-			funtionEdit(new FunctionObject("", new VariablesObject[0], "", ""));//TODO Make these actually do stuff
+			foList.add(functionEdit(new FunctionObject("", new VariablesObject[0], "", "")));// TODO
+																								// Make
+																								// these
+																								// actually
+																								// do
+																								// stuff
 			
 		}else if(aE.getSource().equals(removeFunction)){
 			System.out.println("removeFunction");
+			foList.remove(itemSelected);
 			
 		}else if(aE.getSource().equals(editFunction)){
 			System.out.println("editFunction");
+			foList.add(functionEdit(foList.remove(itemSelected)));
 			
 		}
 	}
@@ -146,7 +202,6 @@ public class Base implements ActionListener, MouseWheelListener{
 		aboutPane.add(here, BorderLayout.SOUTH);
 		aboutPane.add(textPane);
 		aboutFrame.add(aboutPane);
-		aboutFrame.setAlwaysOnTop(true);
 		aboutFrame.setLocationRelativeTo(null);
 		aboutFrame.setResizable(false);
 		aboutFrame.setVisible(true);
@@ -167,7 +222,6 @@ public class Base implements ActionListener, MouseWheelListener{
 		// try{
 		// menuBackFromFunctionList.setIcon(new ImageIcon(new URL("back.png")));
 		// }catch(MalformedURLException e){
-		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
 		menuAbout = new JMenuItem("                                                                                                                                                                                        About");
@@ -176,7 +230,7 @@ public class Base implements ActionListener, MouseWheelListener{
 		menuBar.add(menuAbout);
 		
 		final JList<FunctionObject> list = new JList<FunctionObject>();
-		list.setListData(foArray);
+		list.setListData(foList.toArray(new FunctionObject[0]));
 		final JTextArea summary = new JTextArea();
 		summary.setLineWrap(true);
 		summary.setBackground(Color.getColor("d3d3d3"));
@@ -201,7 +255,6 @@ public class Base implements ActionListener, MouseWheelListener{
 		flPane.add(summary);
 		flFrame.add(flPane);
 		flFrame.setJMenuBar(menuBar);
-		flFrame.setAlwaysOnTop(true);
 		flFrame.setLocationRelativeTo(null);
 		flFrame.setSize(600, 400);
 		flFrame.setResizable(false);
@@ -306,7 +359,7 @@ public class Base implements ActionListener, MouseWheelListener{
 		editFunction.addActionListener(this);
 		
 		final JList<FunctionObject> list = new JList<FunctionObject>();
-		list.setListData(foArray);
+		list.setListData(foList.toArray(new FunctionObject[0]));
 		
 		MouseListener mouseListener = new MouseAdapter(){
 			public void mouseClicked(MouseEvent e){
@@ -330,7 +383,6 @@ public class Base implements ActionListener, MouseWheelListener{
 		pane.add(list);
 		
 		UFLFrame.add(pane);
-		UFLFrame.setAlwaysOnTop(true);
 		UFLFrame.setLocationRelativeTo(null);
 		UFLFrame.setSize(600, 400);
 		UFLFrame.setResizable(false);
@@ -348,7 +400,7 @@ public class Base implements ActionListener, MouseWheelListener{
 	JList<VariablesObject> list;
 	DefaultListModel<VariablesObject> listModel;
 	
-	private FunctionObject funtionEdit(FunctionObject other){ // TODO Finished this
+	private FunctionObject functionEdit(FunctionObject other){ // TODO Finished this
 																// popupMenu
 		JFrame frame = new JFrame();
 		JPanel pane = new JPanel();
@@ -356,7 +408,7 @@ public class Base implements ActionListener, MouseWheelListener{
 		stringFunction = other.getStringFunction();
 		summary = other.getStringFunction();
 		listModel = new DefaultListModel<VariablesObject>();
-		for(int i=0; i<other.getVariables().size(); i++){
+		for(int i = 0; i < other.getVariables().size(); i++){
 			listModel.addElement(other.getVariables().get(i));
 		}
 		list = new JList<VariablesObject>(listModel);
@@ -397,31 +449,43 @@ public class Base implements ActionListener, MouseWheelListener{
 		
 		addVar.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
-				String nameOfVariable="";             
-				double valueOfVariable=0;             
-				char charVariable='~';                
-				boolean useRadians=false;             
-				boolean useMin=false, useMax=false;   
-				double min=0, max=0;                  
-				                                      
+				String nameOfVariable = "";
+				double valueOfVariable = 0;
+				char charVariable = '~';
+				boolean useRadians = false;
+				boolean useMin = false, useMax = false;
+				double min = 0, max = 0;
+				
 				nameOfVariable = JOptionPane.showInputDialog("Please input the name of the Variable\neg. \"Slope\"\n");
 				valueOfVariable = Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the defualt value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only"));
 				charVariable = JOptionPane.showInputDialog("Please input the character representing the variable\neg. \"x\"\nNote: input must be exactly one character, else the fist charcter will be used").charAt(0);
-				//useRadians = JOptionPane.showConfirmDialog(varPane, "Use Radians ")
-				min=Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the minimum value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only)\nNote: if no minimum is nessasary use 0"));
-				max=Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the maximum value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only)\nNote: if no maximum is nessasary use 0"));
+				// useRadians = JOptionPane.showConfirmDialog(varPane,
+				// "Use Radians ")
+				min = Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the minimum value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only)\nNote: if no minimum is nessasary use 0"));
+				max = Double.parseDouble(JOptionPane.showInputDialog("Please input a number that is the maximum value of the variable \nNote: value must be a number (can inlude numeric characters and a maximum of one period charater only)\nNote: if no maximum is nessasary use 0"));
 				
 				VariablesObject varO = new VariablesObject(nameOfVariable, valueOfVariable, charVariable, useRadians, min, max);
 				
 				listModel.addElement(varO);
+				itemSelected = -1;
 			}// end of actionPerformed
 		});// end of saveFile
 		
 		remVar.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				listModel.remove(list.getSelectedIndex());
+				itemSelected = -1;
 			}// end of actionPerformed
 		});// end of saveFile
+		
+		frame.add(pane);
+		frame.setLocationRelativeTo(null);
+		frame.setResizable(false);
+		frame.setVisible(true);
+		frame.pack();
+		
+		frame.validate();
+		frame.repaint();
 		
 		return other;
 		

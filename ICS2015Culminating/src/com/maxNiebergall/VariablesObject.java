@@ -108,5 +108,8 @@ public class VariablesObject{
 	public void setUseMax(boolean useMax){
 		this.useMax = useMax;
 	}
+	public String toString(){
+		return ""+nameOfVariable;
+	}
 	
 }
