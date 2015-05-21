@@ -84,7 +84,7 @@ public class Graph extends JPanel {
 			} catch (ScriptException e) {
 				e.printStackTrace();
 			}
-			System.out.println(engine.get("y"));
+			//System.out.println(engine.get("y"));
 			g.setColor(Color.red);
 			Point2D.Double temp = cartesianConvert(x, ((Double) engine.get("y")).doubleValue(), getWidth(), getHeight());
 			
@@ -94,9 +94,9 @@ public class Graph extends JPanel {
 		
 		Path2D p = new Path2D.Double();
 		p.moveTo(xPoints[0], yPoints[0]);
-		System.out.println("points");//=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-		System.out.println(xPoints[0]);
-		System.out.println(yPoints[0]);
+	//	System.out.println("points");//=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+	//	System.out.println(xPoints[0]);
+	//	System.out.println(yPoints[0]);
 		for(int x=1; x<xPoints.length; x++){
 	        p.lineTo(xPoints[x], yPoints[x]);
 		}
